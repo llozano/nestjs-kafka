@@ -11,6 +11,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@models/*": ["./src/models/index", "./src/models/*"],
+      "@services/*": ["./src/services/index", "./src/services/*"],
+    }
   }
 }

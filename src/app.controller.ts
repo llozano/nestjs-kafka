@@ -1,12 +1,23 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, OnModuleInit, Post, Param } from '@nestjs/common';
+import { KafkaService, ProducerService } from './services';
 
 @Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class AppController implements OnModuleInit {
+  constructor(
+    private readonly kafkaService: KafkaService,
+    private readonly producerService: ProducerService,
+  ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  async onModuleInit(): Promise<void> {
+    await this.kafkaService.connect();
+  }
+
+  @Post(':batchId')
+  processDataset(@Param('batchId') batchId: string) {
+    console.log('Processing: ', batchId);
+
+    setTimeout(() => {
+      this.producerService.process({ batchId });
+    }, 10);
   }
 }
