@@ -1,4 +1,4 @@
-import { Records, StreamFlow, Topic, TopicNames } from '@models/';
+import { Records, StreamFlow, Topic, TopicNames } from '@models/index';
 
 const countByCountry = (data: Records): { [key: string]: number } => {
   const result = {};

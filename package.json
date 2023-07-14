@@ -27,9 +27,9 @@
     "@nestjs/platform-express": "^9.4.3",
     "csv-parse": "^5.4.0",
     "kafkajs": "^2.2.4",
-    "nanoid": "^4.0.2",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.5.5"
+    "rxjs": "^7.5.5",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.5.0",
@@ -39,6 +39,7 @@
     "@types/jest": "^28.1.4",
     "@types/node": "^18.0.3",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "eslint": "^8.19.0",

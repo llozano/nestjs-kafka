@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   ClientKafka,
   KafkaOptions,
@@ -14,6 +15,8 @@ import { TopicMessages } from 'kafkajs';
 export class SuperClientKafka extends ClientKafka {
   constructor(protected readonly options: KafkaOptions['options']) {
     super(options);
+
+    this.logger = new Logger(SuperClientKafka.name);
   }
 
   /**
@@ -58,7 +61,7 @@ export class SuperClientKafka extends ClientKafka {
   ): Promise<any> {
     const topicMessages: TopicMessages[] = [];
 
-    for await (const packet of batchPacket) {
+    for (const packet of batchPacket) {
       const pattern = this.normalizePattern(packet.pattern);
       const outgoingEvent = await this.serializer.serialize(packet.data, {
         pattern,

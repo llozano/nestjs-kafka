@@ -4,7 +4,8 @@ export const config = {
   name: 'kafka-poc',
   options: {
     client: {
-      brokers: ['127.0.0.1:39092', '127.0.0.1:29092'],
+      clientId: 'd-client',
+      brokers: ['localhost:39092', 'localhost:29092'],
     },
     producer: {
       allowAutoTopicCreation: true,
@@ -15,6 +16,6 @@ export const config = {
       allowAutoTopicCreation: true,
     },
     producerOnlyMode: !!process.env.PRODUCE_ONLY_MODE,
-  },
+  } as KafkaOptions['options'],
   transport: Transport.KAFKA,
-} as KafkaOptions;
+};

@@ -1,5 +1,6 @@
 import { Controller, OnModuleInit, Post, Param } from '@nestjs/common';
 import { KafkaService, ProducerService } from './services';
+import { Topic } from './models';
 
 @Controller()
 export class AppController implements OnModuleInit {
@@ -9,15 +10,23 @@ export class AppController implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    const topics = [
+      Topic.AGE_RANGE,
+      Topic.COUNTRY,
+      Topic.COUNTRY_POSITION,
+      Topic.PREF_FOOT,
+    ];
+    this.kafkaService.subscribeTopics(topics);
+
     await this.kafkaService.connect();
   }
 
-  @Post(':batchId')
-  processDataset(@Param('batchId') batchId: string) {
-    console.log('Processing: ', batchId);
+  @Post('process/:datasetId')
+  processDataset(@Param('datasetId') datasetId: string) {
+    console.log('Processing: ', datasetId);
 
     setTimeout(() => {
-      this.producerService.process({ batchId });
+      this.producerService.process({ datasetId });
     }, 10);
   }
 }

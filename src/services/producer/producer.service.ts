@@ -4,9 +4,9 @@ import { ReadPacket } from '@nestjs/microservices';
 import { FileService } from '../file/file.service';
 import { KafkaService } from '../kafka/kafka.service';
 import { config } from '../../config/app.config';
-import { Record, Records, Topic } from '@models/';
+import { Record, Records, Topic } from '@models/index';
 
-import { mergeMap, bufferCount, map } from 'rxjs/operators';
+import { mergeMap, bufferCount, map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class ProducerService {
@@ -17,10 +17,15 @@ export class ProducerService {
 
   process(info: any): void {
     const { bufferSize } = config;
+    const { datasetId } = info;
+
     this.fileService
       .read(info)
       .pipe(
         bufferCount(bufferSize),
+        // tap((records) => {
+        //   console.log('Batch size of', datasetId, records.length);
+        // }),
         map((records) => this.createBatchMessage(records)),
         mergeMap((packets) => {
           return this.kafkaService.publishBatch<Record>(packets);
