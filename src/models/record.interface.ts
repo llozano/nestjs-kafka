@@ -1,3 +1,6 @@
+/**
+ * A football player model
+ */
 export interface Record {
   sofifa_id: number;
   player_url: string;

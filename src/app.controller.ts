@@ -1,24 +1,25 @@
-import { Controller, OnModuleInit, Post, Param } from '@nestjs/common';
+import {
+  Controller,
+  OnModuleInit,
+  OnModuleDestroy,
+  Post,
+  Param,
+} from '@nestjs/common';
 import { KafkaService, ProducerService } from './services';
-import { Topic } from './models';
 
 @Controller()
-export class AppController implements OnModuleInit {
+export class AppController implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly kafkaService: KafkaService,
     private readonly producerService: ProducerService,
   ) {}
 
-  async onModuleInit(): Promise<void> {
-    const topics = [
-      Topic.AGE_RANGE,
-      Topic.COUNTRY,
-      Topic.COUNTRY_POSITION,
-      Topic.PREF_FOOT,
-    ];
-    this.kafkaService.subscribeTopics(topics);
+  async onModuleInit(): Promise<any> {
+    return await this.kafkaService.connect();
+  }
 
-    await this.kafkaService.connect();
+  async onModuleDestroy(): Promise<void> {
+    await this.kafkaService.close();
   }
 
   @Post('process/:datasetId')

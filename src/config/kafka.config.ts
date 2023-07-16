@@ -12,7 +12,7 @@ export const config = {
       transactionTimeout: 30000,
     },
     consumer: {
-      groupId: 'd-group',
+      groupId: 'cool-b-consumer',
       allowAutoTopicCreation: true,
     },
     producerOnlyMode: !!process.env.PRODUCE_ONLY_MODE,

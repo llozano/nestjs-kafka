@@ -6,6 +6,7 @@ import { KafkaService } from '../kafka/kafka.service';
 import { config } from '../../config/app.config';
 import { Record, Records, Topic } from '@models/index';
 
+import { v4 } from 'uuid';
 import { mergeMap, bufferCount, map, tap } from 'rxjs/operators';
 
 @Injectable()
@@ -15,6 +16,10 @@ export class ProducerService {
     private kafkaService: KafkaService,
   ) {}
 
+  /**
+   * Process data set
+   * @param info  dataset info
+   */
   process(info: any): void {
     const { bufferSize } = config;
     const { datasetId } = info;
@@ -31,17 +36,24 @@ export class ProducerService {
           return this.kafkaService.publishBatch<Record>(packets);
         }),
       )
-      .subscribe((_) => {
-        /*  */
-      });
+      .subscribe();
   }
 
+  /**
+   * Hardwire a list of Records to each of the patterns (topics) that constitute
+   * a batch
+   * @param  records               list of Records
+   * @return         list of packets
+   */
   private createBatchMessage(records: Records): ReadPacket[] {
     return [
-      { pattern: Topic.AGE_RANGE, data: [...records] },
-      { pattern: Topic.COUNTRY, data: [...records] },
-      { pattern: Topic.COUNTRY_POSITION, data: [...records] },
-      { pattern: Topic.PREF_FOOT, data: [...records] },
+      { pattern: Topic.AGE_RANGE, data: { key: v4(), value: [...records] } },
+      { pattern: Topic.COUNTRY, data: { key: v4(), value: [...records] } },
+      {
+        pattern: Topic.COUNTRY_POSITION,
+        data: { key: v4(), value: [...records] },
+      },
+      { pattern: Topic.PREF_FOOT, data: { key: v4(), value: [...records] } },
     ];
   }
 }
