@@ -20,7 +20,7 @@ export class FileService {
   }
 
   /**
-   * Read from local
+   * Read from local and stream each of the record from the file
    * @param  info               file info
    * @return      Observable<Record>
    */

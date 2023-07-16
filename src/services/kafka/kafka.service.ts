@@ -14,17 +14,15 @@ export class KafkaService {
     return await this.client.connect();
   }
 
+  async close(): Promise<void> {
+    await this.client.close();
+  }
+
   publishBatch<T = any>(packet: ReadPacket<T>[]): Observable<T> {
     return this.client.sendBatch<T>(packet);
   }
 
   publish<T = any>(packet: ReadPacket<T>): Observable<T> {
     return this.client.emit(packet.pattern, packet.data);
-  }
-
-  subscribeTopics(topics: string[]): void {
-    topics.forEach((topic) => {
-      this.client.subscribeToResponseOf(topic);
-    });
   }
 }

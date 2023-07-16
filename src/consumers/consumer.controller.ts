@@ -1,13 +1,18 @@
 import { Controller, Logger } from '@nestjs/common';
-import { EventPattern, Payload, Ctx, NatsContext } from '@nestjs/microservices';
+import {
+  EventPattern,
+  Payload,
+  Ctx,
+  KafkaContext,
+} from '@nestjs/microservices';
 
 import { KafkaService } from '@services/index';
 import { v4 } from 'uuid';
 
-import { Topic, TopicNames, Records, Aggregation } from '@models/index';
+import { Topic, Records, Aggregation } from '@models/index';
 import { fetchStreamFlow } from '../aggregators';
 
-@Controller('consumers')
+@Controller()
 export class ConsumerController {
   private readonly logger: Logger;
 
@@ -21,29 +26,27 @@ export class ConsumerController {
     Topic.COUNTRY_POSITION,
     Topic.PREF_FOOT,
   ])
-  async handleAgeRangeEvent(
+  async handleAggregatorEvents(
     @Payload() data: Records,
-    @Ctx() context: NatsContext,
+    @Ctx() context: KafkaContext,
   ): Promise<any> {
-    const subject = context.getSubject();
-    const topicName: TopicNames = Topic[subject];
-    const { aggregator, nextTopic } = fetchStreamFlow(topicName);
+    const topic = <Topic>context.getTopic();
+    // Determine what aggregator to apply
+    const { aggregator, nextTopic } = fetchStreamFlow(topic);
 
-    this.logger.debug(`${subject} | ${topicName} | ${data.length}`);
+    this.logger.log(`${topic} | ${data.length}`);
 
     const results = aggregator(data);
     const aggregation = {
-      key: v4(),
-      from: subject,
+      from: topic,
       results,
     } as Aggregation;
 
-    this.kafkaService
-      .publish({
-        data: aggregation,
-        pattern: nextTopic,
-      })
-      .subscribe();
+    // Stream to process on the next topic
+    this.kafkaService.publish({
+      data: { key: v4(), value: aggregation },
+      pattern: nextTopic,
+    });
 
     return results;
   }
