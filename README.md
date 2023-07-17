@@ -28,6 +28,18 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Test the app
+
+Docket compose file is provided in the `resources` folder.
+
+Having kafka running in docker and the app running and listening on the port 3000,
+
+```bash
+curl -X POST http://localhost:3000/process/123
+```
+
+Watch for console logs.
+
 ## License
 
   Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
